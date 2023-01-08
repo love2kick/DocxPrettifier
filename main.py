@@ -1,9 +1,11 @@
 import zipfile
 import os
 import shutil
+from xsltrans import XsltProc as xp
 
 
 class DocxContentSwapper(object):
+
     def __init__(self, target):
         if not target.endswith('.docx'):
             self.target = target + '.docx'
@@ -11,8 +13,8 @@ class DocxContentSwapper(object):
             self.target = target
         self.unzip(self.target)
         self.doc_swap()
-        with zipfile.ZipFile(f'NEW{self.target}', 'w', zipfile.ZIP_DEFLATED) as zipf:
-            self.rezip('Template/', zipf)
+        with zipfile.ZipFile(f'NEW_{self.target}', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            self.rezip('template/', zipf)
         self.cleanup()
 
     @staticmethod
@@ -24,9 +26,10 @@ class DocxContentSwapper(object):
 
     @staticmethod
     def doc_swap():
-        tempdocpath = os.path.join(os.path.dirname(__file__), 'temp/word/document.xml')
-        prettydocpath = os.path.join(os.path.dirname(__file__), 'Template/word/document.xml')
-        shutil.copyfile(tempdocpath, prettydocpath)
+        tempdocpath = 'temp/word/document.xml'
+        prettydocpath = 'template/word/document.xml'
+        xp(tempdocpath).transform(prettydocpath)
+        shutil.copyfile(prettydocpath, tempdocpath)
 
     @staticmethod
     def rezip(path, target):
@@ -40,7 +43,7 @@ class DocxContentSwapper(object):
 
     @staticmethod
     def cleanup():
-        prettydocpath = os.path.join(os.path.dirname(__file__), 'Template/word/document.xml')
+        prettydocpath = os.path.join(os.path.dirname(__file__), 'template/word/document.xml')
         temppath = os.path.join(os.path.dirname(__file__), 'temp')
         try:
             os.remove(prettydocpath)
@@ -50,4 +53,4 @@ class DocxContentSwapper(object):
 
 
 if __name__ == '__main__':
-    DocxContentSwapper(input('Enter file name:'))
+    DocxContentSwapper("NEWsample.docx")
