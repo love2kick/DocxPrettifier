@@ -1,6 +1,7 @@
 import zipfile
 import os
 import shutil
+from unpack import unload_docxml
 from xsltrans import XsltProc as xp
 
 
@@ -16,6 +17,7 @@ class DocxContentSwapper(object):
         with zipfile.ZipFile(f'NEW_{self.target}', 'w', zipfile.ZIP_DEFLATED) as zipf:
             self.rezip('template/', zipf)
         self.cleanup()
+        unload_docxml(f'NEW_{self.target}')
 
     @staticmethod
     def unzip(filepath):
@@ -43,8 +45,8 @@ class DocxContentSwapper(object):
 
     @staticmethod
     def cleanup():
-        prettydocpath = os.path.join(os.path.dirname(__file__), 'template/word/document.xml')
-        temppath = os.path.join(os.path.dirname(__file__), 'temp')
+        prettydocpath = 'template/word/document.xml'
+        temppath = 'temp'
         try:
             os.remove(prettydocpath)
             shutil.rmtree(temppath)
@@ -53,4 +55,4 @@ class DocxContentSwapper(object):
 
 
 if __name__ == '__main__':
-    DocxContentSwapper("NEWsample.docx")
+    DocxContentSwapper("SampleTaxes.docx")
